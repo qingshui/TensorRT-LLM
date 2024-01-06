@@ -166,7 +166,7 @@ protected:
                 {
                     logit += static_cast<float>(bias[j]);
                 }
-                logits[index] = j < mVocabSize ? static_cast<T>(logit / temperature) : -MAX_T_VAL;
+                logits[index] = j < mVocabSize ? static_cast<T>(logit / temperature) : static_cast<T>(-MAX_T_VAL);
             }
         }
     }
@@ -518,14 +518,15 @@ protected:
             for (int32_t t = 0; t < step; ++t)
             {
                 int tokenId = outputIds[bi * mSequenceLength + t];
+                float logit = static_cast<float>(logits[offset + tokenId]);
                 if (!penalized[tokenId])
                 {
-                    float logit = static_cast<float>(logits[offset + tokenId]);
-                    logits[offset + tokenId] = static_cast<T>(
-                        (logit < 0.0f ? logit * repetitionPenalty : logit / repetitionPenalty) - presencePenalty);
+                    logit = 
+                        (logit < 0.0f ? logit * repetitionPenalty : logit / repetitionPenalty) - presencePenalty;
                     penalized[tokenId] = true;
                 }
-                logits[offset + tokenId] -= frequencyPenalty;
+                logit -= frequencyPenalty;
+                logits[offset + tokenId] = static_cast<T>(logit);
             }
         }
     }

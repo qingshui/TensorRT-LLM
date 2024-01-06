@@ -1,9 +1,9 @@
---extra-index-url https://download.pytorch.org/whl/cu121
+#--extra-index-url https://download.pytorch.org/whl/cu121
 --extra-index-url https://pypi.nvidia.com
 accelerate==0.25.0
 build
 colored
-cuda-python==12.2.0
+cuda-python==11.6.0
 diffusers==0.15.0
 lark
 mpi4py
@@ -13,9 +13,9 @@ polygraphy
 psutil
 pynvml>=11.5.0
 sentencepiece>=0.1.99
-tensorrt==9.2.0.post12.dev5
-torch
-transformers==4.36.1
+#tensorrt==9.2.0.post11.dev5
+#torch
+#transformers==4.36.1
 wheel
 optimum
 evaluate

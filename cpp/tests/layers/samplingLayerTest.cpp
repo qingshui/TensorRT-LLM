@@ -86,7 +86,7 @@ void SamplingLayerTest<T>::setup(uint64_t seed, SamplingParams const& params)
     }
 
     typename TopKSamplingLayer<T>::SetupParams setupParams;
-    setupParams.randomSeed = {seed};
+    setupParams.randomSeed = std::vector<uint64_t>({seed});
     setupParams.temperature
         = params.temperatures.size() ? std::make_optional<std::vector<float>>(params.temperatures) : std::nullopt;
     setupParams.runtime_top_k

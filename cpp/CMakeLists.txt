@@ -32,7 +32,7 @@ option(BUILD_PYBIND "Build Python bindings for C++ runtime and batch manager"
        OFF)
 option(BUILD_TESTS "Build Google tests" ON)
 option(BUILD_BENCHMARKS "Build benchmarks" ON)
-option(NVTX_DISABLE "Disable all NVTX features" ON)
+option(NVTX_DISABLE "Disable all NVTX features" OFF)
 option(WARNING_IS_ERROR "Treat all warnings as errors" OFF)
 option(FAST_BUILD "Skip compiling some kernels to accelerate compiling" OFF)
 option(FAST_MATH "Compiling in fast math mode" OFF)
@@ -186,8 +186,10 @@ include_directories(
   ${3RDPARTY_DIR}/json/include)
 
 # TRT dependencies
-set_ifndef(TRT_LIB_DIR ${CMAKE_BINARY_DIR})
-set_ifndef(TRT_INCLUDE_DIR /usr/include/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu)
+#set_ifndef(TRT_LIB_DIR ${CMAKE_BINARY_DIR})
+#set_ifndef(TRT_INCLUDE_DIR /usr/include/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu)
+set_ifndef(TRT_LIB_DIR /home/TensorRT-9.2.0.5/lib)
+set_ifndef(TRT_INCLUDE_DIR /home/TensorRT-9.2.0.5/include)
 set(TRT_LIB nvinfer)
 find_library_create_target(${TRT_LIB} nvinfer SHARED ${TRT_LIB_DIR})
 

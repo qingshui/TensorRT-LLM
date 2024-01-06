@@ -588,7 +588,11 @@ __device__ inline float cuda_max(float2 val)
 template <>
 __device__ inline half cuda_max(half2 val)
 {
+#if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 800))
     return __hmax(val.x, val.y);
+#else
+    return (val.x > val.y) ? val.x : val.y;
+#endif
 }
 
 #ifdef ENABLE_BF16

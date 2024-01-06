@@ -78,23 +78,20 @@ void applyGaussianFilter(T* result, const float* input, int n, float sigma)
 
     std::vector<float> kernel = calculateGaussianKernel(sigma, size);
     int halfSize = size / 2;
-
-    for (int i = 0; i < n; ++i)
-    {
-        result[i] = T{0};
-    }
-
+    
     // Convolution operation
     for (int i = 0; i < n; ++i)
     {
+        float sum = 0.f;
         for (int j = 0; j < size; ++j)
         {
             int k = i - halfSize + j;
             if (k >= 0 && k < n)
             {
-                result[i] += input[k] * kernel[j];
+                sum += input[k] * kernel[j];
             }
         }
+        result[i] = static_cast<T>(sum);
     }
 }
 

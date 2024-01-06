@@ -1770,7 +1770,11 @@ __global__ void shiftKCache(KVCacheBuffer kvCacheBuffer, KVLinearBuffer shiftKCa
     // Use 8bit cache.
     static constexpr bool ENABLE_8BITS_CACHE = sizeof(T_cache) == 1;
     // FP8 KV Cache.
+    #ifdef ENABLE_FP8
     static constexpr bool FP8_K_CACHE = std::is_same<T_cache, __nv_fp8_e4m3>::value;
+    #else
+    static constexpr bool FP8_K_CACHE = false;
+    #endif
     // INT8 KV Cache.
     static constexpr bool INT8_K_CACHE = std::is_same<T_cache, int8_t>::value;
 

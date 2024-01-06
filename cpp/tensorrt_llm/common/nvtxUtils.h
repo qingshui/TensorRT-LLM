@@ -16,16 +16,16 @@
  */
 
 #pragma once
-
+#if !defined(NVTX_DISABLE) && (CUDART_VERSION >= 11080)
 #include <nvtx3/nvtx3.hpp>
-
+#endif
 #include <array>
-
+#if (CUDART_VERSION >= 11080)
 namespace tensorrt_llm::common::nvtx
 {
 inline nvtx3::color nextColor()
 {
-#if !defined(NVTX_DISABLE)
+#if !defined(NVTX_DISABLE) && 
     constexpr std::array kColors{nvtx3::color{0xff00ff00}, nvtx3::color{0xff0000ff}, nvtx3::color{0xffffff00},
         nvtx3::color{0xffff00ff}, nvtx3::color{0xff00ffff}, nvtx3::color{0xffff0000}, nvtx3::color{0xffffffff}};
     constexpr auto numColors = kColors.size();
@@ -38,7 +38,9 @@ inline nvtx3::color nextColor()
     return nvtx3::color{0};
 #endif
 }
-
 } // namespace tensorrt_llm::common::nvtx
-
 #define NVTX3_SCOPED_RANGE(range) ::nvtx3::scoped_range range##_range(::tensorrt_llm::common::nvtx::nextColor(), #range)
+#else
+#define NVTX3_SCOPED_RANGE(range)
+#define NVTX3_FUNC_RANGE()
+#endif

@@ -1192,7 +1192,12 @@ void GptSession::CudaGraphExecutor::launch(CudaStream const& stream)
 bool GptSession::CudaGraphExecutor::update(cudaGraph_t const& graph)
 {
     TLLM_LOG_DEBUG("%s start", __PRETTY_FUNCTION__);
+    #if (CUDART_VERSION >= 11080)
     return cudaGraphExecUpdate(mInstance, graph, nullptr) != cudaSuccess;
+    #else 
+    cudaGraphExecUpdateResult result;
+    return cudaGraphExecUpdate(mInstance, graph, nullptr, &result) != cudaSuccess;
+    #endif
 }
 
 void GptSession::CudaGraphExecutor::clear()

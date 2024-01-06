@@ -514,8 +514,6 @@ void testGptSession(fs::path const& modelPath, ModelSpec const& modelSpec, Model
     }
 }
 
-auto constexpr kBatchSizes = {1, 8};
-
 using ParamType = std::tuple<ModelParams, ModelSpec, SizeType, bool, MicroBatchSizes>;
 
 std::string generateTestName(const testing::TestParamInfo<ParamType>& info)
@@ -590,7 +588,7 @@ TEST_P(ParamTest, Test)
     fs::path const resultsFile{resultsPath / modelSpec.mResultsFile};
 
     testGptSession(
-        modelPath, modelSpec, modelIds, beamWidth, kBatchSizes, resultsFile, mLogger, cudaGraphMode, microBatchSizes);
+        modelPath, modelSpec, modelIds, beamWidth, {1, 8}, resultsFile, mLogger, cudaGraphMode, microBatchSizes);
 }
 
 INSTANTIATE_TEST_SUITE_P(GptSessionTest, ParamTest,
@@ -729,14 +727,13 @@ TEST_F(LlamaSessionOnDemandTest, SamplingFP16WithAttentionPlugin)
     auto const modelPath{ENGINE_PATH / modelDir / engineDir};
     SizeType constexpr beamWidth{1};
     fs::path resultsFile{DATA_PATH / modelDir / FP16_RESULT_FILE};
-    auto const batchSizes = {8};
 
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, beamWidth, batchSizes, resultsFile, mLogger, false, MicroBatchSizes());
+        modelPath, modelSpec, modeIds, beamWidth, {8}, resultsFile, mLogger, false, MicroBatchSizes());
 }
 
 TEST_F(LlamaSessionOnDemandTest, SamplingFP16AttentionPluginDecoderBatch)
@@ -746,14 +743,13 @@ TEST_F(LlamaSessionOnDemandTest, SamplingFP16AttentionPluginDecoderBatch)
     auto const modelPath{ENGINE_PATH / modelDir};
     SizeType constexpr beamWidth{1};
     fs::path resultsFile{DATA_PATH / modelDir / FP16_RESULT_FILE};
-    auto const batchSizes = {8};
 
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin().usePackedInput().useDecoderPerRequest();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, beamWidth, batchSizes, resultsFile, mLogger, false, MicroBatchSizes());
+        modelPath, modelSpec, modeIds, beamWidth, {8}, resultsFile, mLogger, false, MicroBatchSizes());
 }
 
 class ChatGlmSessionTest : public SessionTest // for ChatGLM-6B
@@ -772,63 +768,58 @@ TEST_F(ChatGlmSessionTest, SamplingFP16WithGptAttentionPluginBS1BM1)
 {
     auto const modelName{"chatglm_6b"};
     auto const modelPath{ENGINE_PATH / modelName};
-    auto const batchSizes = {1};
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{130005, 130005};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, 1, batchSizes, "", mLogger, false, MicroBatchSizes(), true, modelName);
+        modelPath, modelSpec, modeIds, 1, {1}, "", mLogger, false, MicroBatchSizes(), true, modelName);
 }
 
 TEST_F(ChatGlm2SessionTest, SamplingFP16WithGptAttentionPluginBS1BM1)
 {
     auto const modelName{"chatglm2_6b"};
     auto const modelPath{ENGINE_PATH / modelName};
-    auto const batchSizes = {1};
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, 1, batchSizes, "", mLogger, false, MicroBatchSizes(), true, modelName);
+        modelPath, modelSpec, modeIds, 1, {1}, "", mLogger, false, MicroBatchSizes(), true, modelName);
 }
 
 TEST_F(ChatGlm2SessionTest, SamplingFP16WithGptAttentionPluginBS2BM1)
 {
     auto const modelName{"chatglm2_6b"};
     auto const modelPath{ENGINE_PATH / modelName};
-    auto const batchSizes = {2};
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, 1, batchSizes, "", mLogger, false, MicroBatchSizes(), true, modelName);
+        modelPath, modelSpec, modeIds, 1, {2}, "", mLogger, false, MicroBatchSizes(), true, modelName);
 }
 
 TEST_F(ChatGlm2SessionTest, SamplingFP16WithGptAttentionPluginBS1BM2)
 {
     auto const modelName{"chatglm2_6b"};
     auto const modelPath{ENGINE_PATH / modelName};
-    auto const batchSizes = {1};
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, 2, batchSizes, "", mLogger, false, MicroBatchSizes(), true, modelName);
+        modelPath, modelSpec, modeIds, 2, {1}, "", mLogger, false, MicroBatchSizes(), true, modelName);
 }
 
 TEST_F(ChatGlm3SessionTest, SamplingFP16WithGptAttentionPluginBS1BM1)
 {
     auto const modelName{"chatglm3_6b"};
     auto const modelPath{ENGINE_PATH / modelName};
-    auto const batchSizes = {1};
     auto constexpr dtype = nvinfer1::DataType::kHALF;
     auto const modelSpec = ModelSpec{"", "", dtype}.useGptAttentionPlugin();
     auto const modeIds = ModelIds{2, 2};
 
     testGptSession(
-        modelPath, modelSpec, modeIds, 1, batchSizes, "", mLogger, false, MicroBatchSizes(), true, modelName);
+        modelPath, modelSpec, modeIds, 1, {1}, "", mLogger, false, MicroBatchSizes(), true, modelName);
 }

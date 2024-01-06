@@ -89,7 +89,9 @@ public:
         case IBuffer::DataType::kINT32: return torch::kInt32;
         case IBuffer::DataType::kINT64: return torch::kInt64;
         case IBuffer::DataType::kBOOL: return at::ScalarType::Bool;
+        #if ENABLE_FP8
         case IBuffer::DataType::kFP8: return at::ScalarType::Bits8;
+        #endif
         case IBuffer::DataType::kBF16: return at::ScalarType::BFloat16;
         default: TLLM_THROW("unsupported data type");
         }
@@ -106,7 +108,9 @@ public:
         case torch::kInt32: return IBuffer::DataType::kINT32;
         case torch::kInt64: return IBuffer::DataType::kINT64;
         case at::ScalarType::Bool: return IBuffer::DataType::kBOOL;
+        #if ENABLE_FP8
         case at::ScalarType::Bits8: return IBuffer::DataType::kFP8;
+        #endif
         case at::ScalarType::BFloat16: return IBuffer::DataType::kBF16;
         default: TLLM_THROW("unsupported data type");
         }

@@ -39,8 +39,8 @@ ncclDataType_t toNcclType(nvinfer1::DataType dataType)
     case nvinfer1::DataType::kINT32: return ncclInt32;
     case nvinfer1::DataType::kUINT8: return ncclUint8;
     case nvinfer1::DataType::kINT64: return ncclInt64;
+#ifdef ENABLE_FP8
     case nvinfer1::DataType::kFP8: return ncclUint8;
-#if ENABLE_BF16
     case nvinfer1::DataType::kBF16: return ncclBfloat16;
 #endif // ENABLE_BF16
     default: TLLM_THROW("Unsupported data type: %d", static_cast<int>(dataType));

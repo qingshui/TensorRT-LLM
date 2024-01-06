@@ -199,7 +199,9 @@ std::size_t BufferManager::memoryPoolReserved(int device)
     ::cudaMemPool_t memPool;
     TLLM_CUDA_CHECK(cudaDeviceGetDefaultMemPool(&memPool, device));
     std::size_t reserved = 0;
+#if (CUDART_VERSION >= 11040)
     TLLM_CUDA_CHECK(cudaMemPoolGetAttribute(memPool, cudaMemPoolAttrReservedMemCurrent, &reserved));
+#endif
     return reserved;
 }
 
@@ -208,7 +210,9 @@ std::size_t BufferManager::memoryPoolUsed(int device)
     ::cudaMemPool_t memPool;
     TLLM_CUDA_CHECK(cudaDeviceGetDefaultMemPool(&memPool, device));
     std::size_t used = 0;
+#if (CUDART_VERSION >= 11040)
     TLLM_CUDA_CHECK(cudaMemPoolGetAttribute(memPool, cudaMemPoolAttrUsedMemCurrent, &used));
+#endif
     return used;
 }
 

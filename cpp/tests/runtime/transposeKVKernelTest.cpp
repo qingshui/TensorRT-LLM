@@ -82,7 +82,7 @@ int8_t castTo(float value)
     const auto rounded = std::round(clipped);
     return static_cast<int8_t>(rounded);
 }
-
+#ifdef ENABLE_FP8
 template <>
 __nv_fp8_e4m3 castTo(float value)
 {
@@ -94,7 +94,7 @@ float castTo(__nv_fp8_e4m3 value)
 {
     return float(value);
 }
-
+#endif
 template <typename T, typename T_DST, typename KVCacheBuffer>
 void verifyKVTransposed(int batchSize, int headsNum, int dimsPerHead, int seqLen, int maxSeqLen, KVCacheBuffer& buffer,
     const std::vector<T>& refKCacheVec, const std::vector<T>& vTransposedCacheVec, bool b8bitKVCache,

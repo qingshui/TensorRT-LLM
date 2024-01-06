@@ -15,6 +15,7 @@
  */
 
 #include "tensorrt_llm/common/cudaBf16Wrapper.h"
+#ifdef ENABLE_FP8
 #include "tensorrt_llm/common/cudaFp8Utils.h"
 #include "tensorrt_llm/thop/thUtils.h"
 
@@ -68,7 +69,6 @@ std::vector<Tensor> e4m3_quantize_helper(Tensor input, QuantizeMode quantize_mod
         = torch::empty(quantized_input_shape, torch::dtype(torch::kInt8).device(torch::kCUDA).requires_grad(false));
 
     Tensor scales = torch::empty(scale_shape, torch::dtype(input.dtype()).device(torch::kCUDA).requires_grad(false));
-
     auto quantized_input_ptr = reinterpret_cast<__nv_fp8_e4m3*>(get_ptr<int8_t>(quantized_input));
 
     auto stream = at::cuda::getDefaultCUDAStream();
@@ -100,7 +100,6 @@ std::vector<Tensor> e4m3_quantize_helper(Tensor input, QuantizeMode quantize_mod
         quantized_input = quantized_input.cpu();
         scales = scales.cpu();
     }
-
     return std::vector<Tensor>{quantized_input, scales};
 }
 
@@ -142,7 +141,6 @@ Tensor e4m3_dequantize_helper(Tensor input, Tensor scales, QuantizeMode quantize
 
     Tensor dequantized_input
         = torch::empty(dequantized_input_shape, torch::dtype(scales.dtype()).device(torch::kCUDA).requires_grad(false));
-
     auto input_ptr = reinterpret_cast<__nv_fp8_e4m3*>(get_ptr<int8_t>(input));
 
     auto stream = at::cuda::getDefaultCUDAStream();
@@ -171,7 +169,6 @@ Tensor e4m3_dequantize_helper(Tensor input, Tensor scales, QuantizeMode quantize
 
     if (!w_is_cuda)
         dequantized_input = dequantized_input.cpu();
-
     return dequantized_input;
 }
 
@@ -225,3 +222,4 @@ static auto symmetric_dequantize_activation
 
 static auto symmetric_dequantize_per_tensor
     = torch::RegisterOperators("tensorrt_llm::dequantize_e4m3_per_tensor", &torch_ext::symmetric_dequantize_per_tensor);
+#endif
