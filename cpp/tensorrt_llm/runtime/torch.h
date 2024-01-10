@@ -46,7 +46,7 @@ public:
                     try
                     {
                         TLLM_CHECK(data == ptr->data());
-                        ptr.reset();
+                        ptr = nullptr;
                     }
                     catch (std::exception const& e)
                     {

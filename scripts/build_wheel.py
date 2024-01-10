@@ -53,7 +53,7 @@ def main(build_type: str = "Release",
          cpp_only: bool = False,
          install: bool = False,
          skip_building_wheel: bool = False,
-         python_bindings: bool = False,
+         python_bindings: bool = True,
          benchmarks: bool = False):
     project_dir = Path(__file__).parent.resolve().parent
     os.chdir(project_dir)
@@ -150,21 +150,22 @@ def main(build_type: str = "Release",
 
     build_pyt = "OFF" if cpp_only else "ON"
     th_common_lib = "" if cpp_only else "th_common"
-    build_pybind = "ON" if python_bindings else "OFF"
+    build_pybind = "ON" #if python_bindings else "OFF"
     bindings_lib = "bindings" if python_bindings else ""
     benchmarks_lib = "benchmarks" if benchmarks else ""
 
     with working_directory(build_dir):
         cmake_def_args = " ".join(cmake_def_args)
         if clean or first_build:
-            build_run(
-                f'cmake -DCMAKE_BUILD_TYPE="{build_type}" -DBUILD_PYT="{build_pyt}" -DBUILD_PYBIND="{build_pybind}"'
-                f' {cmake_cuda_architectures} {cmake_def_args} {cmake_generator} -S "{source_dir}"'
-            )
-        build_run(
-            f'cmake --build . --config {build_type} --parallel {job_count} '
+            cmake_cmd = (f'cmake -DCMAKE_BUILD_TYPE="{build_type}" -DBUILD_PYT="{build_pyt}" -DBUILD_PYBIND="{build_pybind}"'
+                f' {cmake_cuda_architectures} {cmake_def_args} {cmake_generator} -S "{source_dir}"')
+            print(cmake_cmd)
+            build_run(cmake_cmd)
+        build_cmd = (f'cmake --build . --config {build_type} --parallel {job_count} '
             f'--target tensorrt_llm tensorrt_llm_static nvinfer_plugin_tensorrt_llm {th_common_lib} {bindings_lib} {benchmarks_lib}'
             f'{" ".join(extra_make_targets)}')
+        print(build_cmd)
+        build_run(build_cmd)
 
     if cpp_only:
         assert not install, "Installing is not supported for cpp_only builds"
